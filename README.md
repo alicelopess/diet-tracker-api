@@ -1,4 +1,7 @@
 # Diet control application
+
+This project is a simple API for meal logging and diet monitoring.
+
 ## 🚧 In Progress...
 
 ## Functional Requirements
@@ -18,3 +21,9 @@
 - [x] It must be possible to identify the user between requests
 - [x] The user can only view, edit and delete the meals he has created
 - [x] A meal may or may not be included in the diet
+  
+## 🛠 Technology Stack
+- Node
+- Fastify
+- Knex
+- TypeScript

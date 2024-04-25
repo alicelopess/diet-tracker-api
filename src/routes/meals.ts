@@ -16,7 +16,7 @@ export async function mealsRoutes(app:FastifyInstance) {
             .where('session_id', sessionId)
             .select('*')
         
-            return { meals }
+        return { meals }
     })
     
     //List one specific meal
@@ -44,24 +44,40 @@ export async function mealsRoutes(app:FastifyInstance) {
         
         const { sessionId } = request.cookies
 
-        //Number of meals
-        const numberOfMeals = await knex('meals').where('session_id', sessionId).count({count: '*'})
+        //All Meals
+        const meals = await knex('meals')
+            .where('session_id', sessionId)
+            .select('*')
+        
+        //Total number of Meals
+        const numberOfMeals = meals.length
 
         //Number of meals inside the diet
-        const numberOfDietMeals = await knex('meals')
-            .where('session_id', sessionId)
-            .andWhere('included_on_diet', '>', 0)
-            .count({count: '*'})
+        const mealsInsideDietArray = meals.filter((meal) => meal.included_on_diet)
+        const numberOfDietMeals = mealsInsideDietArray.length
         
         //Number of meals outside the diet
-        const numberOfOutsideDietMeals = await knex('meals')
-            .where('session_id', sessionId)
-            .andWhere('included_on_diet', '=', 0)
-            .count({count: '*'})
+        const mealsOutsideDietArray = meals.filter((meal) => !meal.included_on_diet)
+        const numberOfOutsideDietMeals = mealsOutsideDietArray.length
+
+        //Best Diet Sequence
+        let counter = 0
+        let bestDietSequence = counter
+
+        meals.forEach((meal) => {
+            if (meal.included_on_diet) {
+                counter += 1
+            } else {
+                bestDietSequence < counter ?  bestDietSequence = counter : bestDietSequence
+                counter = 0
+            }
+        }) 
         
+        bestDietSequence < counter ?  bestDietSequence = counter : bestDietSequence
         
-        const metrics = { numberOfMeals, numberOfDietMeals, numberOfOutsideDietMeals }
-        
+        //Diet Metrics
+        const metrics = { numberOfMeals, numberOfDietMeals, numberOfOutsideDietMeals, bestDietSequence }
+
         return { metrics }
     })
 
