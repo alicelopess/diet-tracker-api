@@ -101,5 +101,93 @@ describe('Meals routes', () => {
             })
         )
     })
+
+    //The user must be able to update one specific meal
+    it('should be able to update one specific meal', async () => {
+        const createMealResponse = await request(app.server)
+            .post('/meals')
+            .send({
+                name: "Test Meal",
+                description:"Test Meal Description",
+                meal_date: "2024-04-25",
+                meal_time: "20:01:00",
+                included_on_diet: true
+            })
+        
+        //Get session_id from cookies
+        const cookies = createMealResponse.get('Set-Cookie')
+    
+        const listMealResponse = await request(app.server)
+            .get('/meals')
+            .set('Cookie', cookies)
+            .expect(200)
+        
+        const mealId = listMealResponse.body.meals[0].id
+
+        await request(app.server)
+            .put(`/meals/${mealId}`)
+            .set('Cookie', cookies)
+            .send({
+                name: "Test Meal",
+                description:"Test Meal Description",
+                meal_date: "2024-04-25",
+                meal_time: "20:01:00",
+                included_on_diet: false
+            })
+            .expect(201)
+        
+        const getMealResponse = await request(app.server)
+        .get(`/meals/${mealId}`)
+        .set('Cookie', cookies)
+        .expect(200)
+
+        expect(getMealResponse.body.meal).toEqual(
+            expect.objectContaining({
+                name: "Test Meal",
+                description:"Test Meal Description",
+                meal_date: "2024-04-25",
+                meal_time: "20:01:00",
+                included_on_diet: 0
+            })
+        )
+
+    })
+
+    //The user must be able to delete one specific meal
+    it('should be able to delete one specific meal', async () => {
+        const createMealResponse = await request(app.server)
+            .post('/meals')
+            .send({
+                name: "Test Meal",
+                description:"Test Meal Description",
+                meal_date: "2024-04-25",
+                meal_time: "20:01:00",
+                included_on_diet: true
+            })
+        
+        //Get session_id from cookies
+        const cookies = createMealResponse.get('Set-Cookie')
+    
+        const listMealResponse = await request(app.server)
+            .get('/meals')
+            .set('Cookie', cookies)
+            .expect(200)
+        
+        const mealId = listMealResponse.body.meals[0].id
+
+        await request(app.server)
+            .delete(`/meals/${mealId}`)
+            .set('Cookie', cookies)
+            .expect(200)
+        
+        const getMealResponse = await request(app.server)
+            .get('/meals')
+            .set('Cookie', cookies)
+            .expect(200)
+
+        expect(getMealResponse.body.meals).toEqual(
+            []
+        )
+    })
 })
 
