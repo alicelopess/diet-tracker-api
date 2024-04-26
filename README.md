@@ -27,3 +27,4 @@ This project is a simple API for meal logging and diet monitoring.
 - Fastify
 - Knex
 - TypeScript
+- Vitest

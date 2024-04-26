@@ -1,5 +1,12 @@
-import 'dotenv/config'
+import { config } from 'dotenv'
 import { z } from 'zod'
+
+//identifies the environment variable file to be used
+if (process.env.NODE_ENV == 'test') {
+    config({ path: '.env.test' })
+} else {
+    config()
+}
 
 //data format for environment variables
 const envSchema = z.object({
