@@ -189,5 +189,47 @@ describe('Meals routes', () => {
             []
         )
     })
+
+    //The user must be able to access his metrics
+    it('should be able to access his metrics', async () => {
+        const createMealResponse = await request(app.server)
+            .post('/meals')
+            .send({
+                name: "Test Meal",
+                description:"Test Meal Description",
+                meal_date: "2024-04-25",
+                meal_time: "20:01:00",
+                included_on_diet: true
+            })
+        
+        //Get session_id from cookies
+        const cookies = createMealResponse.get('Set-Cookie')
+
+        await request(app.server)
+            .post('/meals')
+            .set('Cookie', cookies)
+            .send({
+                name: "Test Meal",
+                description:"Test Meal Description",
+                meal_date: "2024-04-25",
+                meal_time: "20:01:00",
+                included_on_diet: false
+            })
+    
+        const listMealMetrics = await request(app.server)
+            .get('/meals/metrics')
+            .set('Cookie', cookies)
+            .expect(200)
+
+        expect(listMealMetrics.body.metrics).toEqual(
+            expect.objectContaining({
+                numberOfMeals: 2,
+                numberOfDietMeals: 1,
+                numberOfOutsideDietMeals: 1,
+                bestDietSequence: 1
+            })
+        )
+
+    })
 })
 
