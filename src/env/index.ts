@@ -11,8 +11,10 @@ if (process.env.NODE_ENV == 'test') {
 //data format for environment variables
 const envSchema = z.object({
     NODE_ENV: z.enum(['development', 'test', 'production']),
+    //Adding pg to environment variables
+    DATABASE_CLIENT: z.enum(['sqlite3', 'pg']),
     DATABASE_URL: z.string(),
-    PORT: z.number().default(3333),
+    PORT: z.coerce.number().default(3333),
 }) 
 
 //data validation
