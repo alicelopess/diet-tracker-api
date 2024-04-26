@@ -5,7 +5,7 @@ import { Knex, knex as setupKnex } from 'knex'
 // - Adding types to knex config
 export const config: Knex.Config = {
     client: env.DATABASE_CLIENT,
-    connection: env.DATABASE_CLIENT === 'sqlite3' 
+    connection: env.DATABASE_CLIENT == 'sqlite3' 
         ?   {
                 filename: env.DATABASE_URL,
             }
